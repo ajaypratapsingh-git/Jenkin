@@ -1,0 +1,16 @@
+stage('SonarQube Scanning') {
+    steps {
+        // Inject SonarQube environment (configured in Jenkins under "SonarQube servers")
+        withSonarQubeEnv('sonar') {
+            // Inject your SonarQube token from Jenkins credentials (ID = 'sonar')
+            withCredentials([string(credentialsId: 'sonar', variable: 'SONAR_TOKEN')]) {
+                sh '''
+                    mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:3.7.0.1746:sonar \
+                        -Dsonar.projectKey=my_project_key \
+                        -Dsonar.host.url=$SONAR_HOST_URL \
+                        -Dsonar.login=$SONAR_TOKEN
+                '''
+            }
+        }
+    }
+}
